@@ -1,6 +1,5 @@
 package com.citibanamex.mafcs.commoditycatalog.errorhandling;
 
-import java.net.SocketTimeoutException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import com.citibanamex.mafcs.commoditycatalog.errorhandling.exception.CcC080AddressClientException;
 import com.citibanamex.mafcs.commoditycatalog.errorhandling.exception.DatabaseMsClientException;
 import com.citibanamex.mafcs.commoditycatalog.errorhandling.exception.MicroserviceClientException;
 import com.citibanamex.mafcs.commoditycatalog.errorhandling.exception.ValidationException;
@@ -75,20 +73,6 @@ public class ErrorResolver {
 		return errorResponse;
 	}
 	
-	@ExceptionHandler(CcC080AddressClientException.class)
-	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-	@ResponseBody
-	public ErrorResponse resolveCcC080AddressClientException(HttpServletRequest req, Exception e) {
-		LOGGER.error(e.getMessage(), e);
-
-		ErrorResponse errorResponse = new ErrorResponse();
-
-		errorResponse.setType(ErrorType.ERROR.name());
-		errorResponse.setCode(CCC080ADDRESSCLIENTEXCEPTION_ERROR_CODE);
-		errorResponse.setDetails(e.getMessage());
-
-		return errorResponse;
-	}
 	
 	@ExceptionHandler(RetryableException.class)
 	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
