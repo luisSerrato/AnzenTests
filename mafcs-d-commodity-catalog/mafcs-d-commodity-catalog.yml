@@ -1,0 +1,33 @@
+info:
+  component: Commodity Catalog microservice
+
+eureka:
+  client:
+    registryFetchIntervalSeconds: 5
+    serviceUrl:
+      defaultZone: ${vcap.services.eurekaURL.credentials.uri}
+
+logging:
+  level:
+  org.springframework.web: INFO
+  com.citibanamex.cnsv.clg: DEBUG
+
+feign:
+  url: https://www.mobileuat.banamex.com
+  #url: http://192.168.11.58:7778
+  #url: http://150.110.186.56:50719
+  
+  database:
+    url: http://chnn-api-a-treasury-database-mx-dev1.cfapps-gt1-dev.lac.nsroot.net/
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 120000
+
+ribbon:
+  ConnectTimeout: 15000
+  ReadTimeout: 120000

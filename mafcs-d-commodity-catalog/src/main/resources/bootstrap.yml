@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: mafcs-d-commodity-catalog
+  cloud:
+    config:
+      name: ${spring.application.name}
+      #uri: ${vcap.services.configServerURL.credentials.uri}
+      uri: http://localhost:8888
