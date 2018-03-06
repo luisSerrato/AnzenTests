@@ -18,10 +18,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.citibanamex.mafcs.commoditycatalog.databasemsclient.DatabaseMsClient;
+import com.citibanamex.mafcs.commoditycatalog.formatter.CurrencyFormatter;
 import com.citibanamex.mafcs.commoditycatalog.formatter.SqlStatementRequestFormatter;
+import com.citibanamex.mafcs.commoditycatalog.model.CurrencyContDto;
 import com.citibanamex.mafcs.commoditycatalog.model.CurrencyContinentDto;
 import com.citibanamex.mafcs.commoditycatalog.service.impl.CurrencyContinentServiceImpl;
 import com.citibanamex.mafcs.commoditycatalog.util.Util;
+import com.citibanamex.mafcs.commoditycatalog.viewmodel.currencycontinent.ContinentCurrencyResponse;
 import com.citibanamex.mafcs.commoditycatalog.viewmodel.query.SqlStatementResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,6 +47,11 @@ public class CurrencyServiceTest {
 			return new SqlStatementRequestFormatter();
 		}
 
+		@Bean
+		public CurrencyFormatter currencyFormatter() {
+			return new CurrencyFormatter();
+		}
+
 	}
 
 	@Autowired
@@ -54,20 +62,28 @@ public class CurrencyServiceTest {
 
 	private SqlStatementResponse resultSet;
 
+	@Autowired
+	private CurrencyFormatter currencyFormatter;
+
+	private List<Object[]> lstObj;
+
+	private List<CurrencyContDto> currencies;
+	private List<CurrencyContinentDto> lstCurrencyContinent;
+
 	@Before
 	public void setUp() {
 
 		resultSet = new SqlStatementResponse();
 		resultSet.setResultSet(null);
-		List<Object[]> lstObj = new ArrayList<>();
+		lstObj = new ArrayList<>();
 
 		Object[] objAl = new Object[8];
-		objAl[0] = "String 0";
-		objAl[1] = "String 1";
-		objAl[2] = "String 2";
-		objAl[3] = "String 3";
-		objAl[4] = "String 4";
-		objAl[5] = "String 5";
+		objAl[0] = "currencyKey";
+		objAl[1] = "countryFlag";
+		objAl[2] = "countryNameSp";
+		objAl[3] = "countryNameEn";
+		objAl[4] = "currencyDescSp";
+		objAl[5] = "currencyDescEn";
 		objAl[6] = 6;
 		objAl[7] = 7;
 
@@ -77,6 +93,30 @@ public class CurrencyServiceTest {
 
 		Mockito.when(databaseMsClient.query(Mockito.any())).thenReturn(resultSet);
 
+		// List<CurrencyContinentDto> Formatter
+
+		CurrencyContDto currencyContDto = new CurrencyContDto();
+
+		currencyContDto.setBuyPrice(1.768753573);
+		currencyContDto.setCountryFlag("argentina.png");
+		currencyContDto.setCountryNameEn("Argentina");
+		currencyContDto.setCountryNameSp("Argentina");
+		currencyContDto.setCurrencyDescEn("Peso");
+		currencyContDto.setCurrencyDescSp("Peso");
+		currencyContDto.setCurrencyKey("1");
+		currencyContDto.setSalePrice(1.768753573);
+
+		currencies = new ArrayList<>();
+		currencies.add(currencyContDto);
+
+		CurrencyContinentDto currencyContinentDto = new CurrencyContinentDto();
+
+		currencyContinentDto.setContinent("America");
+		currencyContinentDto.setCurrencies(currencies);
+
+		lstCurrencyContinent = new ArrayList<>();
+		lstCurrencyContinent.add(currencyContinentDto);
+
 	}
 
 	@Test
@@ -84,10 +124,21 @@ public class CurrencyServiceTest {
 
 		List<CurrencyContinentDto> lstCurrencyContinent = currencyContinentService
 				.fetchCurrencyContinentByKey(Util.getContKeyCurrency());
-		ObjectMapper om = new ObjectMapper();
-		String strOm = om.writeValueAsString(lstCurrencyContinent);
+		ObjectMapper mapper = new ObjectMapper();
+		String strMapper = mapper.writeValueAsString(lstCurrencyContinent);
 
-		logger.info("Response " + strOm);
+		logger.info("Response " + strMapper);
+	}
+
+	@Test
+	public void testCurrencyContinentFormatter() throws Exception {
+
+		ContinentCurrencyResponse response = currencyFormatter.currencyContinentFormatter(lstCurrencyContinent);
+		ObjectMapper mapper = new ObjectMapper();
+		String strMapper = mapper.writeValueAsString(response);
+
+		logger.info("Response formatter Continent"+ strMapper);
+
 	}
 
 }
