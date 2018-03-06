@@ -6,21 +6,28 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.citibanamex.mafcs.commoditycatalog.databasemsclient.DatabaseMsClient;
 import com.citibanamex.mafcs.commoditycatalog.formatter.MetalFormatter;
 import com.citibanamex.mafcs.commoditycatalog.formatter.MetalSummaryFormatter;
+import com.citibanamex.mafcs.commoditycatalog.formatter.SqlStatementRequestFormatter;
 import com.citibanamex.mafcs.commoditycatalog.model.CoinDto;
 import com.citibanamex.mafcs.commoditycatalog.model.MetalDetailDto;
 import com.citibanamex.mafcs.commoditycatalog.model.MetalDto;
 import com.citibanamex.mafcs.commoditycatalog.model.MetalSummaryDto;
+import com.citibanamex.mafcs.commoditycatalog.service.impl.MetalSummaryServiceImpl;
+import com.citibanamex.mafcs.commoditycatalog.util.Util;
 import com.citibanamex.mafcs.commoditycatalog.viewmodel.metaldetail.MetalResponse;
 import com.citibanamex.mafcs.commoditycatalog.viewmodel.metaldetail.MetalSummaryResponse;
+import com.citibanamex.mafcs.commoditycatalog.viewmodel.query.SqlStatementResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -29,6 +36,12 @@ public class MetalServiceTest {
 
 	@Configuration
 	static class MetalServiceTestConfigurarion{
+		
+		@Bean
+		public MetalSummaryService metalSummaryService(){
+			return new MetalSummaryServiceImpl();
+		}
+		
 		
 		@Bean
 		public MetalFormatter metalFormatter(){
@@ -40,8 +53,16 @@ public class MetalServiceTest {
 		public MetalSummaryFormatter metalSummaryFormatter(){
 			return new MetalSummaryFormatter();
 		}
+		
+		@Bean
+		public SqlStatementRequestFormatter sqlStatementRequestFormatter(){
+			return new SqlStatementRequestFormatter();
+		}
 	}
 	
+	
+	@Autowired
+	private MetalSummaryService metalSummaryService;
 	
 	@Autowired
 	private MetalFormatter metalFormatter;
@@ -49,9 +70,14 @@ public class MetalServiceTest {
 	@Autowired 
 	private MetalSummaryFormatter metalSummaryFormatter;
 	
+	@MockBean
+	private DatabaseMsClient databaseMsClient;
+	
 	private List<MetalDto> allMetals;
 	
 	private List<MetalSummaryDto> ltMetalDetailDto;
+	
+	private SqlStatementResponse resultSet;
 	
 	private static final Logger logger = LoggerFactory.getLogger(MetalService.class);
 	
@@ -104,7 +130,17 @@ public class MetalServiceTest {
 			ltMetalDetailDto.add(metalSummary);
 		}
 		
+		resultSet = new SqlStatementResponse();
+		resultSet.setResultSet(new ArrayList<>());
 		
+		Object[] objResultSet = new Object[5];
+		objResultSet[0] = new String("metal key");
+		objResultSet[1] = new String("coin");
+		objResultSet[2] = new String("pesos metal");
+		objResultSet[3] = new Integer(100);
+		objResultSet[4] = new Double(1000);
+		
+		resultSet.getResultSet().add(objResultSet);
 		
 	}
 	
@@ -136,6 +172,18 @@ public class MetalServiceTest {
 	}
 	
 	
-	
+	@Test
+	public void testMetalSummaryService() throws Exception{
+		
+		Mockito.when(databaseMsClient.query(Mockito.any())).thenReturn(resultSet);
+		
+		List<MetalSummaryDto> ltmetal = 
+				metalSummaryService.fetchMetalsByKey(Util.getSummaryKeyMetal());
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String strMapper = mapper.writeValueAsString(ltmetal);
+		
+		logger.info(strMapper);		
+	}
 	
 }
