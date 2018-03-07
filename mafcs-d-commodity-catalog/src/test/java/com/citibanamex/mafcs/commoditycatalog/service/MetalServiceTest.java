@@ -23,7 +23,9 @@ import com.citibanamex.mafcs.commoditycatalog.model.CoinDto;
 import com.citibanamex.mafcs.commoditycatalog.model.MetalDetailDto;
 import com.citibanamex.mafcs.commoditycatalog.model.MetalDto;
 import com.citibanamex.mafcs.commoditycatalog.model.MetalSummaryDto;
+import com.citibanamex.mafcs.commoditycatalog.service.impl.MetalServiceImpl;
 import com.citibanamex.mafcs.commoditycatalog.service.impl.MetalSummaryServiceImpl;
+import com.citibanamex.mafcs.commoditycatalog.service.impl.SingleCoinService;
 import com.citibanamex.mafcs.commoditycatalog.util.Util;
 import com.citibanamex.mafcs.commoditycatalog.viewmodel.metaldetail.MetalResponse;
 import com.citibanamex.mafcs.commoditycatalog.viewmodel.metaldetail.MetalSummaryResponse;
@@ -42,6 +44,15 @@ public class MetalServiceTest {
 			return new MetalSummaryServiceImpl();
 		}
 		
+		@Bean
+		public MetalService metalService(){
+			return new MetalServiceImpl();
+		}
+		
+		@Bean
+		public SingleCoinService singleCoinService(){
+			return new SingleCoinService();
+		}
 		
 		@Bean
 		public MetalFormatter metalFormatter(){
@@ -63,6 +74,9 @@ public class MetalServiceTest {
 	
 	@Autowired
 	private MetalSummaryService metalSummaryService;
+	
+	@Autowired
+	private MetalService metalService;
 	
 	@Autowired
 	private MetalFormatter metalFormatter;
@@ -138,7 +152,7 @@ public class MetalServiceTest {
 		objResultSet[1] = new String("coin");
 		objResultSet[2] = new String("pesos metal");
 		objResultSet[3] = new Integer(100);
-		objResultSet[4] = new Double(1000);
+		objResultSet[4] = new Integer(1000);
 		
 		resultSet.getResultSet().add(objResultSet);
 		
@@ -177,13 +191,27 @@ public class MetalServiceTest {
 		
 		Mockito.when(databaseMsClient.query(Mockito.any())).thenReturn(resultSet);
 		
-		List<MetalSummaryDto> ltmetal = 
+		List<MetalSummaryDto> ltMetal = 
 				metalSummaryService.fetchMetalsByKey(Util.getSummaryKeyMetal());
 		
 		ObjectMapper mapper = new ObjectMapper();
-		String strMapper = mapper.writeValueAsString(ltmetal);
+		String strMapper = mapper.writeValueAsString(ltMetal);
 		
 		logger.info(strMapper);		
+	}
+	
+	@Test
+	public void testMetalService() throws Exception{
+		Mockito.when(databaseMsClient.query(Mockito.any())).thenReturn(resultSet);
+		
+		List<MetalDto> ltMetal = 
+				metalService.fetchMetalsByKeys(Util.getSummNameMetal(), Util.getSummKeyMetal());
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String strMapper = mapper.writeValueAsString(ltMetal);
+		
+		logger.info(strMapper);		
+		
 	}
 	
 }
