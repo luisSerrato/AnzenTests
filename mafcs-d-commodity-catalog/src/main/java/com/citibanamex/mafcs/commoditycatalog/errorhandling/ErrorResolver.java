@@ -20,7 +20,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.citibanamex.mafcs.commoditycatalog.errorhandling.exception.DatabaseMsClientException;
 import com.citibanamex.mafcs.commoditycatalog.errorhandling.exception.MicroserviceClientException;
-import com.citibanamex.mafcs.commoditycatalog.errorhandling.exception.ValidationException;
 import com.citibanamex.mafcs.commoditycatalog.errorhandling.exception.YearFormatException;
 
 import feign.RetryableException;
@@ -117,21 +116,6 @@ public class ErrorResolver {
 		errorResponse.setCode(BADREQUESTEXCEPTION_ERROR_CODE);
 		errorResponse.setDetails(e.getMessage());
 		errorResponse.setLocation("[year]");
-
-		return errorResponse;
-	}
-	
-	@ExceptionHandler(ValidationException.class)
-	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-	@ResponseBody
-	public ErrorResponse resolveValidationException(HttpServletRequest req, Exception e) {
-		LOGGER.error(e.getMessage(), e);
-
-		ErrorResponse errorResponse = new ErrorResponse();
-
-		errorResponse.setType(ErrorType.ERROR.name());
-		errorResponse.setCode(VALIDATIONEXCEPTION_ERROR_CODE);
-		errorResponse.setDetails(e.getMessage());
 
 		return errorResponse;
 	}

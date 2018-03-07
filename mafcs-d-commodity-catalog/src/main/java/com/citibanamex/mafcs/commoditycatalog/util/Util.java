@@ -1,9 +1,5 @@
 package com.citibanamex.mafcs.commoditycatalog.util;
 
-import java.util.regex.Pattern;
-
-import com.citibanamex.mafcs.commoditycatalog.errorhandling.exception.YearFormatException;
-
 public class Util {
 
 private static final String[] SUMM_KEY_METAL = new String[] { "OCEN", "OAZT" };
@@ -92,39 +88,7 @@ private static final String[] SUMM_KEY_METAL = new String[] { "OCEN", "OAZT" };
 		return SUMMARY_KEY_METAL;
 	}
 
-	public static int getMonthNumber(String month){
-		return Month.valueOf(month.toUpperCase()).ordinal()+1;
-	}
 	
-	public enum Month{
-		ENERO("ENERO"),
-		FEBRERO("FEBRERO"),
-		MARZO("MARZO"),
-		ABRIL("ABRIL"),
-		MAYO("MAYO"),
-		JUNIO("JUNIO"),
-		JULIO("JULIO"),
-		AGOSTO("AGOSTO"),
-		SEPTIEMBRE("SEPTIEMBRE"),
-		OCTUBRE("OCTUBRE"),
-		NOVIEMBRE("NOVIEMBRE"),
-		DICIEMBRE("DICIEMBRE");
-		
-		@SuppressWarnings("unused")
-		private String text;
-		
-		private Month(final String text){
-			this.text=text;
-		}
-	}
 	
-	public static int validateLenghtInt(int value){
-		final Pattern pattern = Pattern.compile("^\\d{4}$");
 		
-		if(!pattern.matcher(String.valueOf(value)).matches()){
-			throw new YearFormatException(NUMBER_LENGHT_MESSAGE);
-		}
-		return value;
-	}
-	
 }
