@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.citibanamex.mafcs.commoditycatalog.databasemsclient.DatabaseMsClient;
@@ -33,7 +34,7 @@ import com.citibanamex.mafcs.commoditycatalog.viewmodel.query.SqlStatementRespon
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@Configuration
+@ContextConfiguration
 public class MetalServiceTest {
 
 	@Configuration
